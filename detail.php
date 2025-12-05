@@ -9,6 +9,65 @@
 <style>
     body{ background:#f6f8fc; font-family:'Segoe UI',sans-serif;}
 
+    /* ========== SIDEBAR ========== */
+.sidebar {
+    width: 240px;
+    background: #1e293b;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    padding: 25px 20px;
+}
+
+.sidebar-title {
+    font-size: 26px;
+    font-weight: 700;
+    margin-bottom: 40px;
+}
+
+/* Sidebar Links */
+.sidebar-menu {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.menu-link {
+    font-size: 16px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    text-decoration: none;
+    color: #e2e8f0;
+    background: #334155;
+    transition: 0.25s;
+}
+
+.menu-link:hover {
+    background: #475569;
+    color: #fff;
+}
+
+/* Logout Button */
+.logout-btn {
+    margin-top: auto;
+    padding: 10px 14px;
+    background: #ef4444;
+    text-align: center;
+    border-radius: 8px;
+    color: #fff;
+    font-weight: 600;
+    text-decoration: none;
+    transition: 0.25s;
+}
+
+.logout-btn:hover {
+    background: #dc2626;
+}
+.dashboard-wrapper {
+    display: flex;
+    min-height: 100vh;
+    background: #f4f6f9;
+}
     
         /* ===== NAVBAR ONLY ===== */
 
@@ -85,11 +144,15 @@
         }
 
     .post-box{
-        background:#fff; padding:25px; border-radius:12px;
+        background:#fff; 
+        padding:25px; 
+        border-radius:12px;
         box-shadow:0 8px 20px rgba(0,0,0,.08);
     }
     .post-img{
-        width:100%; height:350px; object-fit:cover;
+        width:100%;
+         height:350px;
+          object-fit:cover;
         border-radius:12px;
     }
     .download-btn{
@@ -98,9 +161,15 @@
         text-decoration:none;display:inline-block;margin-top:15px;
     }
     .download-btn:hover{background:#0056d6;}
+    .dashboard-content {
+    flex: 1;
+    padding: 40px;
+}
 </style>
 </head>
+
 <body>
+    
 <nav class="navbar">
     <div class="nav-left">
         <a href="index.php"><h2 class="logo">ProBlogger</h2></a>
@@ -112,10 +181,24 @@
         <a href="register.php" class="btn signup">Signup</a>
     </div>
 </nav>
-<div class="container py-5">
 
-    <!-- Blog Detail Box -->
-    <div class="post-box">
+
+<div class="dashboard-wrapper">
+ <!-- Sidebar -->
+    <aside class="sidebar">
+        <h2 class="sidebar-title">Dashboard</h2>
+
+        <nav class="sidebar-menu">
+            <a href="createBlog.php" class="menu-link">Add New Post</a>
+            <a href="index.php" class="menu-link">View Website</a>
+        </nav>
+
+        <a href="logout.php" class="logout-btn">Logout</a>
+    </aside>
+
+<main>
+    <div class="dashboard-content">
+ <!-- Blog Detail Box -->
         <img src="https://i.ibb.co/tPQyK0n/office.jpg" class="post-img" alt="Blog Image">
 
         <h2 class="fw-bold mt-4">The Power of Creative Blogging</h2>
@@ -138,7 +221,9 @@
 
         <!-- File Download Button (dummy pdf) -->
         <a href="#" class="download-btn">Download PDF File</a>
-    </div>
+</div>
+</main>
+   
 
 </div>
 

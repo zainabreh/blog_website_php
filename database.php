@@ -3,7 +3,7 @@
 $host = 'localhost';
 $user = 'root';
 $pass = '';
-$dbname = 'todo_app';
+$dbname = 'blogWebsite_php';
 
 $conn = mysqli_connect($host, $user, $pass, $dbname);
 

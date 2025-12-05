@@ -84,6 +84,63 @@
             background: #1ba34d;
         }
 
+        
+/* ========== SIDEBAR ========== */
+.sidebar {
+    width: 240px;
+    background: #1e293b;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    padding: 25px 20px;
+}
+
+.sidebar-title {
+    font-size: 26px;
+    font-weight: 700;
+    margin-bottom: 40px;
+}
+
+/* Sidebar Links */
+.sidebar-menu {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.menu-link {
+    font-size: 16px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    text-decoration: none;
+    color: #e2e8f0;
+    background: #334155;
+    transition: 0.25s;
+}
+
+.menu-link:hover {
+    background: #475569;
+    color: #fff;
+}
+
+/* Logout Button */
+.logout-btn {
+    margin-top: auto;
+    padding: 10px 14px;
+    background: #ef4444;
+    text-align: center;
+    border-radius: 8px;
+    color: #fff;
+    font-weight: 600;
+    text-decoration: none;
+    transition: 0.25s;
+}
+
+.logout-btn:hover {
+    background: #dc2626;
+}
+
+
     .form-container{
         width:60%;
         background:#fff;
@@ -115,7 +172,19 @@
     </div>
 </nav>
 <div class="form-container">
-    <h2 class="fw-bold mb-4 text-center text-primary">Update Blog Post</h2>
+      <!-- Sidebar -->
+    <aside class="sidebar">
+        <h2 class="sidebar-title">Dashboard</h2>
+
+        <nav class="sidebar-menu">
+            <a href="createBlog.php" class="menu-link">➕ Add New Post</a>
+        </nav>
+
+        <a href="logout.php" class="logout-btn">Logout</a>
+    </aside>
+
+    <main>
+         <h2 class="fw-bold mb-4 text-center text-primary">Update Blog Post</h2>
 
     <form action="insert.php" method="POST" enctype="multipart/form-data">
 
@@ -133,6 +202,8 @@
 
         <button type="submit" class="btn-submit text-white w-100">Update Blog</button>
     </form>
+    </main>
+   
 </div>
 </body>
 </html>
