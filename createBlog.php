@@ -131,7 +131,7 @@
         <label class="fw-semibold">Publish Date</label>
         <input type="date" name="pub_date" class="form-control mb-4" required>
 
-        <button type="submit" class="btn-submit text-white w-100">Publish Blog</button>
+        <button type="submit" name="createblog" class="btn-submit text-white w-100">Publish Blog</button>
     </form>
 </div>
 </body>

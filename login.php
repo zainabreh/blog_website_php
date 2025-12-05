@@ -1,3 +1,14 @@
+
+<?php  
+session_start();
+
+if(isset($_SESSION['user_id'])){
+    header('Location: index.php');
+    exit();
+}
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -126,7 +137,7 @@
         <div class="login-box">
             <h3 class="text-center mb-4">Login</h3>
 
-            <form action="login_action.php" method="POST">
+            <form action="process.php" method="POST">
 
                 <div class="mb-3">
                     <label class="form-label">Email</label>
@@ -138,7 +149,7 @@
                     <input type="password" name="password" class="form-control" required>
                 </div>
 
-                <button type="submit" class="btn btn-primary w-100">Login</button>
+                <button type="submit" name="login" class="btn btn-primary w-100">Login</button>
 
                 <p class="text-center text-small mt-3">
                     Don't have an account? <a href="register.php">Register here</a>

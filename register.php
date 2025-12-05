@@ -1,3 +1,14 @@
+
+<?php  
+session_start();
+
+if(isset($_SESSION['user_id'])){
+    header('Location: index.php');
+    exit();
+}
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -125,7 +136,7 @@
         <div class="reg-box">
             <h3 class="text-center mb-4">Registration</h3>
 
-            <form action="register.php" method="POST" enctype="multipart/form-data">
+            <form action="process.php" method="POST" enctype="multipart/form-data">
 
                 <div class="mb-3">
                     <label class="form-label">Username</label>
