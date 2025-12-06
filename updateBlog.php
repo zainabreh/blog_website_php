@@ -1,3 +1,12 @@
+<?php
+if (!isset($_GET['id'])) {
+    die("No blog ID provided!");
+}
+
+$blogId = (int)$_GET['id'];
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -139,10 +148,9 @@
         <main>
             <h2 class="fw-bold mb-4 text-center text-primary">Update Blog Post</h2>
 
-            <form action="insert.php" method="POST" enctype="multipart/form-data">
+            <form action="process.php?id=<?php echo $blogId; ?>" method="POST" enctype="multipart/form-data">
 
                 <?php
-                $blogId = $_GET['id'];
                 include_once('database.php');
                 $selectQuery = "select * from blogs where Id = ?";
                 $stmt = $conn->prepare($selectQuery);

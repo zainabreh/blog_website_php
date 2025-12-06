@@ -203,36 +203,56 @@ if(isset($_POST['createblog'])){
 
 <?php
 
-if(isset($_POST['update_blog'])) {
+if (isset($_POST['update_blog'])) {
+
+    include_once('database.php');
 
     $blogId = $_GET['id'];
     $title = $_POST['title'];
     $article = $_POST['article'];
     $pub_date = $_POST['pub_date'];
-    $image = $_FILES['image']['name'];
-    $tempImage = $_FILES['image']['tmp_name'];
-    $targetPath = './uploads/' . $image;
-    $blog_image = $_FILES['image']['name'] ? $_FILES['image']['name'] : $row['blog_image'];
 
-    if(!empty($image)) {
-        if(!move_uploaded_file($tempImage, $targetPath)){
-            echo "<div class='alert alert-danger' role='alert'>
-                            Failed to upload blog image.
-                        </div>";
-            exit();
-        }
-    }
-    include_once('database.php');
-    if(empty($title) || empty($article) || empty($pub_date)){
-        echo "<div class='alert alert-danger' role='alert'>
-                    All fields are required.
-                </div>";
-        exit();
-    }
-    $updateQuery = "UPDATE blogs SET blog_title=?, description=?, blog_image=?, published_date=? WHERE id=?";   
+    $oldImageQuery = $conn->query("SELECT blog_image FROM blogs WHERE id=$blogId");
+    $oldImageRow = $oldImageQuery->fetch_assoc();
+    $oldImage = $oldImageRow['blog_image'];
 
     
+    $image = $_FILES['image']['name'];
+    $tempImage = $_FILES['image']['tmp_name'];
+    $targetPath = "./uploads/" . $image;
 
+  
+    if (!empty($image)) {
+       
+        if (!move_uploaded_file($tempImage, $targetPath)) {
+            echo "<div class='alert alert-danger'>Failed to upload blog image.</div>";
+            exit();
+        }
+        $blog_image = $image; 
+    } else {
+        
+        $blog_image = $oldImage;
+    }
+
+  
+    if (empty($title) || empty($article) || empty($pub_date)) {
+        echo "<div class='alert alert-danger'>All fields are required.</div>";
+        exit();
+    }
+
+    $updateQuery = "UPDATE blogs 
+                    SET blog_title=?, description=?, blog_image=?, published_date=? 
+                    WHERE id=?";
+
+    $stmt = $conn->prepare($updateQuery);
+    $stmt->bind_param("ssssi", $title, $article, $blog_image, $pub_date, $blogId);
+
+    if ($stmt->execute()) {
+        echo "<div class='alert alert-success'>Blog updated successfully.</div>";
+        header("Location:detail.php?id=$blogId");
+    } else {
+        echo "<div class='alert alert-danger'>Failed to update blog.</div>";
+    }
 }
 
 ?>

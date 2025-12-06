@@ -1,11 +1,11 @@
-
-<?php  
+<?php
 session_start();
 
-if(!isset($_SESSION['user_id'])){
+if (!isset($_SESSION['user_id'])) {
     header('Location: index.php');
     exit();
 }
+
 
 ?>
 
@@ -323,16 +323,20 @@ if(!isset($_SESSION['user_id'])){
                             $shortDesc = substr($row['description'], 0, 60) . '...';
 
                             echo "
-                             <tr>
-                                <td>" . htmlspecialchars($row['published_date']) . "</td>
-                                <td>" . htmlspecialchars($shortTitle) . "</td>
-                                <td>" . htmlspecialchars($shortDesc) . "</td>
-                                <td class='actions'>
-                                    <a href='detail.php?id=" . htmlspecialchars($row['id']) . "' class='btn view'>View</a>
-                                    <a href='updateBlog.php?id=" . htmlspecialchars($row['id']) . "' class='btn edit'>Edit</a>
-                                    <a href='deleteBlog.php?id=" . htmlspecialchars($row['id']) . "' class='btn delete'>Delete</a>
-                                </td>
-                            </tr>";
+                                    <tr>
+                                        <td>" . htmlspecialchars($row['published_date']) . "</td>
+                                        <td>" . htmlspecialchars($shortTitle) . "</td>
+                                        <td>" . htmlspecialchars($shortDesc) . "</td>
+                                        <td class='actions'>
+                                            <a href='detail.php?id=" . htmlspecialchars($row['id']) . "' class='btn view'>View</a>
+
+                                            <a href='updateBlog.php?id=" . htmlspecialchars($row['id']) . "' class='btn btn-warning btn-sm edit'>Edit</a>
+
+
+                                            <a href='deleteBlog.php?id=" . htmlspecialchars($row['id']) . "' class='btn delete'>Delete</a>
+                                        </td>
+                                    </tr>
+                                    ";
                         }
                     }
                     ?>

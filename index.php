@@ -12,6 +12,30 @@
             background: #f6f8fc;
             font-family: 'Segoe UI', sans-serif;
         }
+        .blog-card img {
+    width: 100%;
+    height: 220px;
+    object-fit: contain;
+    object-position: center;
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+}
+
+/* Limit description to 3 lines */
+.blog-desc {
+    color: #6c757d;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.blog-title {
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
 
         /* ===== NAVBAR ONLY ===== */
 
@@ -91,6 +115,7 @@
         .blog-card {
             background: #fff;
             border-radius: 15px;
+            height: 450px;
             overflow: hidden;
             box-shadow: 0 8px 25px rgba(0, 0, 0, .07);
             transition: .3s;
@@ -101,11 +126,11 @@
             box-shadow: 0 12px 30px rgba(0, 0, 0, .12);
         }
 
-        .blog-card img {
+        /* .blog-card img {
             width: 100%;
             height: 200px;
             object-fit: cover;
-        }
+        } */
 
         .blog-body {
             padding: 20px;
@@ -150,83 +175,28 @@
         <h2 class="fw-bold text-center mb-5 text-primary">All Blog Posts</h2>
 
         <div class="row g-4">
+<?php
+include_once('database.php');
 
-            <!-- Blog 1 -->
-            <div class="col-md-4">
-                <div class="blog-card">
-                    <img src="https://images.unsplash.com/photo-1509099836639-18ba1795216d?auto=format&fit=crop&w=800&q=60" alt="">
-                    <div class="blog-body">
-                        <small class="text-muted">2024/01/18</small>
-                        <h5 class="fw-bold mt-2">What is PHP? A Beginner's Guide</h5>
-                        <p class="text-secondary">
-                            PHP is a server-side scripting language primarily used for web development, powering millions of websites...
-                        </p>
-                        <a href="detail.php" class="btn-read">Read More →</a>
-                    </div>
-                </div>
+$query = "SELECT * FROM blogs";
+$res = mysqli_query($conn, $query);
+
+while ($row = mysqli_fetch_assoc($res)) {
+?>
+    <div class="col-md-4">
+        <div class="blog-card mb-4">
+            <img src="./uploads/<?php echo $row['blog_image']; ?>" alt="">
+            <div class="blog-body">
+                <small class="text-muted"><?php echo date('Y/m/d', strtotime($row['published_date'])); ?></small>
+                <h5 class="fw-bold mt-2 blog-title "><?php echo $row['blog_title']; ?></h5>
+                <p class="blog-desc"><?php echo $row['description']; ?></p>
+                <a href="detail.php?id=<?php echo $row['id']; ?>" class="btn-read">Read More →</a>
             </div>
-
-            <!-- Blog 2 -->
-            <div class="col-md-4">
-                <div class="blog-card">
-                    <img src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=800&q=60" alt="">
-                    <div class="blog-body">
-                        <small class="text-muted">2024/02/10</small>
-                        <h5 class="fw-bold mt-2">How to Become a Web Developer</h5>
-                        <p class="text-secondary">
-                            Becoming a web developer requires understanding front-end, backend, databases and frameworks...
-                        </p>
-                        <a href="#" class="btn-read">Read More →</a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Blog 3 -->
-            <div class="col-md-4">
-                <div class="blog-card">
-                    <img src="https://images.unsplash.com/photo-1522199755839-a2bacb67c546?auto=format&fit=crop&w=800&q=60" alt="">
-                    <div class="blog-body">
-                        <small class="text-muted">2024/03/04</small>
-                        <h5 class="fw-bold mt-2">Why Bootstrap is Great for UI</h5>
-                        <p class="text-secondary">
-                            Bootstrap makes web design faster and responsive by offering a wide set of pre-styled components...
-                        </p>
-                        <a href="#" class="btn-read">Read More →</a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Blog 4 -->
-            <div class="col-md-4">
-                <div class="blog-card">
-                    <img src="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=800&q=60" alt="">
-                    <div class="blog-body">
-                        <small class="text-muted">2024/03/21</small>
-                        <h5 class="fw-bold mt-2">Top 5 Programming Languages in 2024</h5>
-                        <p class="text-secondary">
-                            Python, JavaScript, C#, Java and Go remain top choices for software development...
-                        </p>
-                        <a href="#" class="btn-read">Read More →</a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Blog 6 -->
-            <div class="col-md-4">
-                <div class="blog-card">
-                    <img src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=800&q=60" alt="">
-                    <div class="blog-body">
-                        <small class="text-muted">2024/04/22</small>
-                        <h5 class="fw-bold mt-2">How Databases Work — Simple Explanation</h5>
-                        <p class="text-secondary">
-                            Databases store, retrieve and organize data in structured form using SQL and relational models...
-                        </p>
-                        <a href="#" class="btn-read">Read More →</a>
-                    </div>
-                </div>
-            </div>
-
         </div>
+    </div>
+<?php } ?>
+</div>
+
     </div>
 
 </body>
