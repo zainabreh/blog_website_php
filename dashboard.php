@@ -1,6 +1,14 @@
-<?php
+
+<?php  
 session_start();
+
+if(!isset($_SESSION['user_id'])){
+    header('Location: index.php');
+    exit();
+}
+
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -225,6 +233,20 @@ session_start();
         .signup:hover {
             background: #1ba34d;
         }
+
+        .clamp-title {
+            display: -webkit-box;
+            -webkit-line-clamp: 1;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .clamp-desc {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
     </style>
 </head>
 
@@ -242,7 +264,7 @@ session_start();
 
             if (isset($_SESSION['user_id'])) {
                 echo '<a href="dashboard.php" class="btn new-blog">Dashboard</a>';
-                echo '<a href="process.php" name="logout" class="btn login">Logout</a>';
+                echo '<a href="process.php?logout=true" name="logout" class="btn login">Logout</a>';
             } else {
                 echo '<a href="login.php" class="btn login">Login</a>';
                 echo '<a href="register.php" class="btn signup">Signup</a>';
@@ -282,16 +304,38 @@ session_start();
 
                 <tbody>
                     <!-- Example Row -->
-                    <tr>
-                        <td>2023/09/25</td>
-                        <td>First Blog Edited</td>
-                        <td>Test Summary</td>
-                        <td class="actions">
-                            <a href="detail.php" class="btn view">View</a>
-                            <a href="updateBlog.php" class="btn edit">Edit</a>
-                            <a href="deleteBlog.php" class="btn delete">Delete</a>
-                        </td>
-                    </tr>
+
+                    <?php
+                    $query = "select * from blogs where userId=?";
+                    include_once('database.php');
+                    $stmt = $conn->prepare($query);
+                    $uId = $_SESSION['user_id'];
+                    $stmt->bind_param("i", $uId);
+                    $stmt->execute();
+                    $result = $stmt->get_result();
+                    if ($result->num_rows === 0) {
+                        echo "<div class='alert alert-info' role='alert'>
+                        You have not created any blog posts yet.
+                    </div>";
+                    } else {
+                        while ($row = $result->fetch_assoc()) {
+                            $shortTitle = substr($row['blog_title'], 0, 20) . '...';
+                            $shortDesc = substr($row['description'], 0, 60) . '...';
+
+                            echo "
+                             <tr>
+                                <td>" . htmlspecialchars($row['published_date']) . "</td>
+                                <td>" . htmlspecialchars($shortTitle) . "</td>
+                                <td>" . htmlspecialchars($shortDesc) . "</td>
+                                <td class='actions'>
+                                    <a href='detail.php?id=" . htmlspecialchars($row['id']) . "' class='btn view'>View</a>
+                                    <a href='updateBlog.php?id=" . htmlspecialchars($row['id']) . "' class='btn edit'>Edit</a>
+                                    <a href='deleteBlog.php?id=" . htmlspecialchars($row['id']) . "' class='btn delete'>Delete</a>
+                                </td>
+                            </tr>";
+                        }
+                    }
+                    ?>
 
                     <!-- Repeat rows dynamically with PHP -->
                 </tbody>

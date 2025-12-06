@@ -1,3 +1,13 @@
+<?php  
+session_start();
+
+if(!isset($_SESSION['user_id'])){
+    header('Location: index.php');
+    exit();
+}
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -109,15 +119,22 @@
     </div>
 
     <div class="nav-right">
-        <a href="createBlog.php" class="btn new-blog">New Blog</a>
-        <a href="login.php" class="btn login">Login</a>
-        <a href="register.php" class="btn signup">Signup</a>
+       <?php
+        session_start();
+        if (isset($_SESSION['user_id'])) {
+                echo '<a href="dashboard.php" class="btn new-blog">Dashboard</a>';
+                echo '<a href="process.php?logout=true" name="logout" class="btn login">Logout</a>';
+            } else {
+                echo '<a href="login.php" class="btn login">Login</a>';
+                echo '<a href="register.php" class="btn signup">Signup</a>';
+            }
+       ?>
     </div>
 </nav>
 <div class="form-container">
     <h2 class="fw-bold mb-4 text-center text-primary">Create New Blog Post</h2>
 
-    <form action="insert.php" method="POST" enctype="multipart/form-data">
+    <form action="process.php" method="POST" enctype="multipart/form-data">
 
         <label class="fw-semibold">Post Title</label>
         <input type="text" name="title" class="form-control mb-3" placeholder="Enter blog title" required>

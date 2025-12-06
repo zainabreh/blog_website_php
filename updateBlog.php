@@ -1,15 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Update Blog Post</title>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update Blog Post</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
-<style>
-    body{ background:#eef2f7; font-family: 'Segoe UI', sans-serif; }
+    <style>
+        body {
+            background: #eef2f7;
+            font-family: 'Segoe UI', sans-serif;
+        }
 
-    
+
         /* ===== NAVBAR ONLY ===== */
 
         .navbar {
@@ -84,126 +88,103 @@
             background: #1ba34d;
         }
 
-        
-/* ========== SIDEBAR ========== */
-.sidebar {
-    width: 240px;
-    background: #1e293b;
-    color: #fff;
-    display: flex;
-    flex-direction: column;
-    padding: 25px 20px;
-}
+        .form-container {
+            width: 60%;
+            background: #fff;
+            padding: 35px;
+            border-radius: 12px;
+            margin: auto;
+            margin-top: 50px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, .08);
+        }
 
-.sidebar-title {
-    font-size: 26px;
-    font-weight: 700;
-    margin-bottom: 40px;
-}
-
-/* Sidebar Links */
-.sidebar-menu {
-    display: flex;
-    flex-direction: column;
-    gap: 18px;
-}
-
-.menu-link {
-    font-size: 16px;
-    padding: 10px 14px;
-    border-radius: 8px;
-    text-decoration: none;
-    color: #e2e8f0;
-    background: #334155;
-    transition: 0.25s;
-}
-
-.menu-link:hover {
-    background: #475569;
-    color: #fff;
-}
-
-/* Logout Button */
-.logout-btn {
-    margin-top: auto;
-    padding: 10px 14px;
-    background: #ef4444;
-    text-align: center;
-    border-radius: 8px;
-    color: #fff;
-    font-weight: 600;
-    text-decoration: none;
-    transition: 0.25s;
-}
-
-.logout-btn:hover {
-    background: #dc2626;
-}
-
-
-    .form-container{
-        width:60%;
-        background:#fff;
-        padding:35px;
-        border-radius:12px;
-        margin:auto;
-        margin-top:50px;
-        box-shadow:0 6px 20px rgba(0,0,0,.08);
-    }
-    .btn-submit{
-        background:#00A8E8;
-        font-weight:bold;
-        border:none;
-        padding:10px 22px;
-        border-radius:50px;
-    }
-</style>
+        .btn-submit {
+            background: #00A8E8;
+            font-weight: bold;
+            border: none;
+            padding: 10px 22px;
+            border-radius: 50px;
+        }
+    </style>
 </head>
+
 <body>
-<nav class="navbar">
-    <div class="nav-left">
-        <a href="index.php"><h2 class="logo">ProBlogger</h2></a>
+
+
+    <nav class="navbar">
+        <div class="nav-left">
+            <a href="index.php">
+                <h2 class="logo">ProBlogger</h2>
+            </a>
+        </div>
+
+        <div class="nav-right">
+            <?php
+            session_start();
+            if (isset($_SESSION['user_id'])) {
+                echo '<a href="dashboard.php" class="btn new-blog">Dashboard</a>';
+                echo '<a href="process.php?logout=true" name="logout" class="btn login">Logout</a>';
+            } else {
+                echo '<a href="login.php" class="btn login">Login</a>';
+                echo '<a href="register.php" class="btn signup">Signup</a>';
+            }
+            ?>
+        </div>
+    </nav>
+
+
+
+    <div class="form-container">
+
+        <main>
+            <h2 class="fw-bold mb-4 text-center text-primary">Update Blog Post</h2>
+
+            <form action="insert.php" method="POST" enctype="multipart/form-data">
+
+                <?php
+                $blogId = $_GET['id'];
+                include_once('database.php');
+                $selectQuery = "select * from blogs where Id = ?";
+                $stmt = $conn->prepare($selectQuery);
+                $stmt->bind_param('i', $blogId);
+                $stmt->execute();
+                $res = $stmt->get_result();
+                $row = $res->fetch_assoc();
+
+                ?>
+
+                <label class="fw-semibold">Post Title</label>
+                <input type="text" name="title" class="form-control mb-3" value="<?php echo htmlspecialchars($row['blog_title']); ?>" placeholder="Enter blog title" required>
+
+                  <!-- Show existing image -->
+            <?php if (!empty($row['blog_image'])): ?>
+                <div class="mb-2">
+                    <img src="./uploads/<?php echo htmlspecialchars($row['blog_image']); ?>"
+                        alt="Featured Image"
+                        style="width:120px; border-radius:6px;">
+                    <p class="mt-1 text-muted">Current file: <?php echo htmlspecialchars($row['blog_image']); ?></p>
+                </div>
+            <?php endif; ?>
+
+            <!-- File input (cannot be pre-filled) -->
+            <input type="file" name="image" class="form-control mb-3">
+
+                <label class="fw-semibold">Content</label>
+                <textarea name="article" rows="6" class="form-control mb-3" placeholder="Enter blog article..." required><?php echo htmlspecialchars($row['description']); ?></textarea>
+
+                <label class="fw-semibold">Publish Date</label>
+                <input type="date" name="pub_date" class="form-control mb-4"
+                    value="<?php echo date('Y-m-d', strtotime($row['published_date'])); ?>" required>
+
+
+                <button type="submit" name="update_blog" class="btn-submit text-white w-100">Update Blog</button>
+
+
+
+            </form>
+        </main>
+
     </div>
-
-    <div class="nav-right">
-        <a href="createBlog.php" class="btn new-blog">New Blog</a>
-        <a href="login.php" class="btn login">Login</a>
-        <a href="register.php" class="btn signup">Signup</a>
-    </div>
-</nav>
-<div class="form-container">
-      <!-- Sidebar -->
-    <aside class="sidebar">
-        <h2 class="sidebar-title">Dashboard</h2>
-
-        <nav class="sidebar-menu">
-            <a href="createBlog.php" class="menu-link">➕ Add New Post</a>
-        </nav>
-
-        <a href="logout.php" class="logout-btn">Logout</a>
-    </aside>
-
-    <main>
-         <h2 class="fw-bold mb-4 text-center text-primary">Update Blog Post</h2>
-
-    <form action="insert.php" method="POST" enctype="multipart/form-data">
-
-        <label class="fw-semibold">Post Title</label>
-        <input type="text" name="title" class="form-control mb-3" placeholder="Enter blog title" required>
-
-        <label class="fw-semibold">Featured Image</label>
-        <input type="file" name="image" class="form-control mb-3" required>
-
-        <label class="fw-semibold">Content</label>
-        <textarea name="article" rows="6" class="form-control mb-3" placeholder="Enter blog article..." required></textarea>
-
-        <label class="fw-semibold">Publish Date</label>
-        <input type="date" name="pub_date" class="form-control mb-4" required>
-
-        <button type="submit" class="btn-submit text-white w-100">Update Blog</button>
-    </form>
-    </main>
-   
-</div>
 </body>
+
 </html>

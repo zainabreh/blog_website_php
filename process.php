@@ -137,7 +137,7 @@
 
 
 <?php
-if(isset($_POST['logout'])) {
+if(isset($_GET['logout'])) {
     session_start();
     session_unset();
     session_destroy();
@@ -148,7 +148,7 @@ if(isset($_POST['logout'])) {
 
 
 <?php 
-
+session_start();
 if(isset($_POST['createblog'])){
 
     $title = $_POST['title'];
@@ -174,10 +174,62 @@ if(isset($_POST['createblog'])){
         exit();
     }
 
-    session_start();
     $uId = $_SESSION['user_id'];
+    $uName = $_SESSION['username'];
 
-    $insertQuery = "insert into blogs (userId,blog_title,description,blog_image,published_date) value('?,?,?,?,?,?')";
+    $insertQuery = "insert into blogs (userId,author,blog_title,description,blog_image,published_date) values(?,?,?,?,?,?)";
+
+    $stmt = $conn->prepare($insertQuery);
+
+    $stmt->bind_param('isssss', $uId, $uName, $title, $article, $image, $pub_date);
+    if($stmt->execute()){
+         echo "<div class='alert alert-success' role='alert'>
+                            Blog Created Successfully.
+                        </div>";
+            header('Location: dashboard.php');
+            exit();
+    }else {
+            echo "<div class='alert alert-danger' role='alert'>
+                            Blog Creation Failed. Please try again.
+                        </div>";
+        }
+        $stmt->close();
+        $conn->close(); 
+
+}
+
+?>
+
+
+<?php
+
+if(isset($_POST['update_blog'])) {
+
+    $blogId = $_GET['id'];
+    $title = $_POST['title'];
+    $article = $_POST['article'];
+    $pub_date = $_POST['pub_date'];
+    $image = $_FILES['image']['name'];
+    $tempImage = $_FILES['image']['tmp_name'];
+    $targetPath = './uploads/' . $image;
+    $blog_image = $_FILES['image']['name'] ? $_FILES['image']['name'] : $row['blog_image'];
+
+    if(!empty($image)) {
+        if(!move_uploaded_file($tempImage, $targetPath)){
+            echo "<div class='alert alert-danger' role='alert'>
+                            Failed to upload blog image.
+                        </div>";
+            exit();
+        }
+    }
+    include_once('database.php');
+    if(empty($title) || empty($article) || empty($pub_date)){
+        echo "<div class='alert alert-danger' role='alert'>
+                    All fields are required.
+                </div>";
+        exit();
+    }
+    $updateQuery = "UPDATE blogs SET blog_title=?, description=?, blog_image=?, published_date=? WHERE id=?";   
 
     
 
