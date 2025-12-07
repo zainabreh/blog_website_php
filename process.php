@@ -82,7 +82,7 @@
 
 
 
-<!-- login code -->
+ <!-- login code -->
  <?php
 
     if (isset($_POST['login'])) {
@@ -118,6 +118,7 @@
                     session_start();
                     $_SESSION['user_id'] = $user['id'];
                     $_SESSION['username'] = $user['username'];
+                    $_SESSION['profile_image'] = $user['profile_image'];
                     header('Location: index.php');
                     exit();
                 } else {
@@ -136,123 +137,156 @@
     ?>
 
 
-<?php
-if(isset($_GET['logout'])) {
+ <?php
+    if (isset($_GET['logout'])) {
+        session_start();
+        session_unset();
+        session_destroy();
+        header('Location: index.php');
+        exit();
+    }
+    ?>
+
+
+ <?php
     session_start();
-    session_unset();
-    session_destroy();
-    header('Location: index.php');
-    exit();
-}
-?>
+    require "vendor/autoload.php";
 
+    use PHPMailer\PHPMailer\PHPMailer;
+    use PHPMailer\PHPMailer\Exception;
 
-<?php 
-session_start();
-if(isset($_POST['createblog'])){
+    if (isset($_POST['createblog'])) {
 
-    $title = $_POST['title'];
-    $article = $_POST['article'];
-    $pub_date = $_POST['pub_date'];
-    $image = $_FILES['image']['name'];
-    $tempImage = $_FILES['image']['tmp_name'];
-    $targetPath = './uploads/' . $image;
+        $title = $_POST['title'];
+        $article = $_POST['article'];
+        $pub_date = $_POST['pub_date'];
+        $image = $_FILES['image']['name'];
+        $tempImage = $_FILES['image']['tmp_name'];
+        $targetPath = './uploads/' . $image;
 
-    if(!move_uploaded_file($tempImage, $targetPath)){
-        echo "<div class='alert alert-danger' role='alert'>
+        if (!move_uploaded_file($tempImage, $targetPath)) {
+            echo "<div class='alert alert-danger' role='alert'>
                         Failed to upload blog image.
                     </div>";
-        exit();
-    }
+            exit();
+        }
 
-    include_once('database.php');
+        include_once('database.php');
 
-    if(empty($title) || empty($article) || empty($pub_date) || empty($image)){
-        echo "<div class='alert alert-danger' role='alert'>
+        if (empty($title) || empty($article) || empty($pub_date) || empty($image)) {
+            echo "<div class='alert alert-danger' role='alert'>
                     All fields are required.
                 </div>";
-        exit();
-    }
+            exit();
+        }
 
-    $uId = $_SESSION['user_id'];
-    $uName = $_SESSION['username'];
+        $uId = $_SESSION['user_id'];
+        $uName = $_SESSION['username'];
 
-    $insertQuery = "insert into blogs (userId,author,blog_title,description,blog_image,published_date) values(?,?,?,?,?,?)";
+        $insertQuery = "insert into blogs (userId,author,blog_title,description,blog_image,published_date) values(?,?,?,?,?,?)";
 
-    $stmt = $conn->prepare($insertQuery);
+        $stmt = $conn->prepare($insertQuery);
 
-    $stmt->bind_param('isssss', $uId, $uName, $title, $article, $image, $pub_date);
-    if($stmt->execute()){
-         echo "<div class='alert alert-success' role='alert'>
+        $stmt->bind_param('isssss', $uId, $uName, $title, $article, $image, $pub_date);
+        if ($stmt->execute()) {
+            echo "<div class='alert alert-success' role='alert'>
                             Blog Created Successfully.
                         </div>";
+
+            // Sending email after successful blog creation
+
+            try {
+                $mail = new PHPMailer(true);
+                $mail->isSMTP();
+                $mail->isHTML(true);
+                $mail->Host = 'smtp.gmail.com';
+                $mail->Port = 587;
+                $mail->SMTPAuth = true;
+                $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+                $mail->Username = 'zainab.rd.93@gmail.com';
+                $mail->Password = 'afwl rbfb lnkc yppk';
+
+                $mail->setFrom('no-reply@yourwebsite.com', 'Your Website');
+                $mail->addAddress('subscriber@example.com', 'Subscriber Name'); // recipient
+                $mail->Subject = "New Blog Posted: $title";
+                $mail->Body = "
+            <h2>New Blog Published</h2>
+            <p><strong>Title:</strong> $title</p>
+            <p>$article</p>
+            <p>Check it out on your website!</p>
+        ";
+
+                $mail->send();
+            } catch (Exception $e) {
+                echo "Email could not be sent. Error: {$mail->ErrorInfo}";
+            }
+
             header('Location: dashboard.php');
             exit();
-    }else {
+        } else {
             echo "<div class='alert alert-danger' role='alert'>
                             Blog Creation Failed. Please try again.
                         </div>";
         }
         $stmt->close();
-        $conn->close(); 
+        $conn->close();
+    }
 
-}
-
-?>
+    ?>
 
 
-<?php
+ <?php
 
-if (isset($_POST['update_blog'])) {
+    if (isset($_POST['update_blog'])) {
 
-    include_once('database.php');
+        include_once('database.php');
 
-    $blogId = $_GET['id'];
-    $title = $_POST['title'];
-    $article = $_POST['article'];
-    $pub_date = $_POST['pub_date'];
+        $blogId = $_GET['id'];
+        $title = $_POST['title'];
+        $article = $_POST['article'];
+        $pub_date = $_POST['pub_date'];
 
-    $oldImageQuery = $conn->query("SELECT blog_image FROM blogs WHERE id=$blogId");
-    $oldImageRow = $oldImageQuery->fetch_assoc();
-    $oldImage = $oldImageRow['blog_image'];
+        $oldImageQuery = $conn->query("SELECT blog_image FROM blogs WHERE id=$blogId");
+        $oldImageRow = $oldImageQuery->fetch_assoc();
+        $oldImage = $oldImageRow['blog_image'];
 
-    
-    $image = $_FILES['image']['name'];
-    $tempImage = $_FILES['image']['tmp_name'];
-    $targetPath = "./uploads/" . $image;
 
-  
-    if (!empty($image)) {
-       
-        if (!move_uploaded_file($tempImage, $targetPath)) {
-            echo "<div class='alert alert-danger'>Failed to upload blog image.</div>";
+        $image = $_FILES['image']['name'];
+        $tempImage = $_FILES['image']['tmp_name'];
+        $targetPath = "./uploads/" . $image;
+
+
+        if (!empty($image)) {
+
+            if (!move_uploaded_file($tempImage, $targetPath)) {
+                echo "<div class='alert alert-danger'>Failed to upload blog image.</div>";
+                exit();
+            }
+            $blog_image = $image;
+        } else {
+
+            $blog_image = $oldImage;
+        }
+
+
+        if (empty($title) || empty($article) || empty($pub_date)) {
+            echo "<div class='alert alert-danger'>All fields are required.</div>";
             exit();
         }
-        $blog_image = $image; 
-    } else {
-        
-        $blog_image = $oldImage;
-    }
 
-  
-    if (empty($title) || empty($article) || empty($pub_date)) {
-        echo "<div class='alert alert-danger'>All fields are required.</div>";
-        exit();
-    }
-
-    $updateQuery = "UPDATE blogs 
+        $updateQuery = "UPDATE blogs 
                     SET blog_title=?, description=?, blog_image=?, published_date=? 
                     WHERE id=?";
 
-    $stmt = $conn->prepare($updateQuery);
-    $stmt->bind_param("ssssi", $title, $article, $blog_image, $pub_date, $blogId);
+        $stmt = $conn->prepare($updateQuery);
+        $stmt->bind_param("ssssi", $title, $article, $blog_image, $pub_date, $blogId);
 
-    if ($stmt->execute()) {
-        echo "<div class='alert alert-success'>Blog updated successfully.</div>";
-        header("Location:detail.php?id=$blogId");
-    } else {
-        echo "<div class='alert alert-danger'>Failed to update blog.</div>";
+        if ($stmt->execute()) {
+            echo "<div class='alert alert-success'>Blog updated successfully.</div>";
+            header("Location:detail.php?id=$blogId");
+        } else {
+            echo "<div class='alert alert-danger'>Failed to update blog.</div>";
+        }
     }
-}
 
-?>
+    ?>

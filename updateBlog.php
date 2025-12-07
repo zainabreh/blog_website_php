@@ -1,4 +1,5 @@
 <?php
+session_start();
 if (!isset($_GET['id'])) {
     die("No blog ID provided!");
 }
@@ -114,6 +115,27 @@ $blogId = (int)$_GET['id'];
             padding: 10px 22px;
             border-radius: 50px;
         }
+         .profile-box {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #fff;
+            padding: 6px 12px;
+            border-radius: 25px;
+            border: 1px solid #ddd;
+        }
+
+        .profile-img {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .profile-name {
+            font-weight: 600;
+            color: #333;
+        }
     </style>
 </head>
 
@@ -129,9 +151,15 @@ $blogId = (int)$_GET['id'];
 
         <div class="nav-right">
             <?php
-            session_start();
             if (isset($_SESSION['user_id'])) {
-                echo '<a href="dashboard.php" class="btn new-blog">Dashboard</a>';
+                $username = $_SESSION['username'];
+                $profileImage = $_SESSION['profile_image'] ?? 'default.png';
+
+                echo '<a href="dashboard.php"><div class="profile-box">
+                        <img src="./uploads/' . $profileImage . '" class="profile-img" alt="Profile">
+
+                        <span class="profile-name">' . htmlspecialchars($username) . '</span>
+                    </div></a>';
                 echo '<a href="process.php?logout=true" name="logout" class="btn login">Logout</a>';
             } else {
                 echo '<a href="login.php" class="btn login">Login</a>';
@@ -164,18 +192,18 @@ $blogId = (int)$_GET['id'];
                 <label class="fw-semibold">Post Title</label>
                 <input type="text" name="title" class="form-control mb-3" value="<?php echo htmlspecialchars($row['blog_title']); ?>" placeholder="Enter blog title" required>
 
-                  <!-- Show existing image -->
-            <?php if (!empty($row['blog_image'])): ?>
-                <div class="mb-2">
-                    <img src="./uploads/<?php echo htmlspecialchars($row['blog_image']); ?>"
-                        alt="Featured Image"
-                        style="width:120px; border-radius:6px;">
-                    <p class="mt-1 text-muted">Current file: <?php echo htmlspecialchars($row['blog_image']); ?></p>
-                </div>
-            <?php endif; ?>
+                <!-- Show existing image -->
+                <?php if (!empty($row['blog_image'])): ?>
+                    <div class="mb-2">
+                        <img src="./uploads/<?php echo htmlspecialchars($row['blog_image']); ?>"
+                            alt="Featured Image"
+                            style="width:120px; border-radius:6px;">
+                        <p class="mt-1 text-muted">Current file: <?php echo htmlspecialchars($row['blog_image']); ?></p>
+                    </div>
+                <?php endif; ?>
 
-            <!-- File input (cannot be pre-filled) -->
-            <input type="file" name="image" class="form-control mb-3">
+                <!-- File input (cannot be pre-filled) -->
+                <input type="file" name="image" class="form-control mb-3">
 
                 <label class="fw-semibold">Content</label>
                 <textarea name="article" rows="6" class="form-control mb-3" placeholder="Enter blog article..." required><?php echo htmlspecialchars($row['description']); ?></textarea>

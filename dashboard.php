@@ -247,6 +247,28 @@ if (!isset($_SESSION['user_id'])) {
             -webkit-box-orient: vertical;
             overflow: hidden;
         }
+
+        .profile-box {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #fff;
+            padding: 6px 12px;
+            border-radius: 25px;
+            border: 1px solid #ddd;
+        }
+
+        .profile-img {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .profile-name {
+            font-weight: 600;
+            color: #333;
+        }
     </style>
 </head>
 
@@ -263,7 +285,14 @@ if (!isset($_SESSION['user_id'])) {
             <?php
 
             if (isset($_SESSION['user_id'])) {
-                echo '<a href="dashboard.php" class="btn new-blog">Dashboard</a>';
+                $username = $_SESSION['username'];
+                $profileImage = $_SESSION['profile_image'] ?? 'default.png';
+
+                echo '<a href="dashboard.php"><div class="profile-box">
+                        <img src="./uploads/' . $profileImage . '" class="profile-img" alt="Profile">
+
+                        <span class="profile-name">' . htmlspecialchars($username) . '</span>
+                    </div></a>';
                 echo '<a href="process.php?logout=true" name="logout" class="btn login">Logout</a>';
             } else {
                 echo '<a href="login.php" class="btn login">Login</a>';
@@ -292,7 +321,7 @@ if (!isset($_SESSION['user_id'])) {
         <main class="dashboard-content">
             <h1 class="page-heading">Your Blog Posts</h1>
 
-            <table class="blog-table">
+            <!-- <table class="blog-table">
                 <thead>
                     <tr>
                         <th>Publication Date</th>
@@ -302,7 +331,7 @@ if (!isset($_SESSION['user_id'])) {
                     </tr>
                 </thead>
 
-                <tbody>
+                <tbody> -->
                     <!-- Example Row -->
 
                     <?php
@@ -313,11 +342,17 @@ if (!isset($_SESSION['user_id'])) {
                     $stmt->bind_param("i", $uId);
                     $stmt->execute();
                     $result = $stmt->get_result();
-                    if ($result->num_rows === 0) {
-                        echo "<div class='alert alert-info' role='alert'>
-                        You have not created any blog posts yet.
-                    </div>";
-                    } else {
+                    if ($result->num_rows > 0) {
+                        echo "<table class=\"blog-table\">
+                                <thead>
+                                    <tr>
+                                        <th>Published Date</th>
+                                        <th>Title</th>
+                                        <th>Description</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>";
                         while ($row = $result->fetch_assoc()) {
                             $shortTitle = substr($row['blog_title'], 0, 20) . '...';
                             $shortDesc = substr($row['description'], 0, 60) . '...';
@@ -336,8 +371,13 @@ if (!isset($_SESSION['user_id'])) {
                                             <a href='deleteBlog.php?id=" . htmlspecialchars($row['id']) . "' class='btn delete'>Delete</a>
                                         </td>
                                     </tr>
-                                    ";
+                                    </tbody>
+                                    </table>";
                         }
+                    } else {
+                        echo "<div class='alert alert-info' role='alert'>
+                        You have not created any blog posts yet.
+                    </div>";
                     }
                     ?>
 

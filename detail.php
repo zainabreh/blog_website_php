@@ -197,6 +197,27 @@ session_start();
             object-fit: contain;
             display: block;
         }
+         .profile-box {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #fff;
+            padding: 6px 12px;
+            border-radius: 25px;
+            border: 1px solid #ddd;
+        }
+
+        .profile-img {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .profile-name {
+            font-weight: 600;
+            color: #333;
+        }
     </style>
 </head>
 
@@ -212,7 +233,14 @@ session_start();
         <div class="nav-right">
             <?php
             if (isset($_SESSION['user_id'])) {
-                echo '<a href="dashboard.php" class="btn new-blog">Dashboard</a>';
+                $username = $_SESSION['username'];
+                $profileImage = $_SESSION['profile_image'] ?? 'default.png';
+
+                echo '<a href="dashboard.php"><div class="profile-box">
+                        <img src="./uploads/' . $profileImage . '" class="profile-img" alt="Profile">
+
+                        <span class="profile-name">' . htmlspecialchars($username) . '</span>
+                    </div></a>';
                 echo '<a href="process.php?logout=true" name="logout" class="btn login">Logout</a>';
             } else {
                 echo '<a href="login.php" class="btn login">Login</a>';

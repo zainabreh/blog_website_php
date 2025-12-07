@@ -1,3 +1,8 @@
+<?php
+    session_start();
+    
+    ?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -12,30 +17,31 @@
             background: #f6f8fc;
             font-family: 'Segoe UI', sans-serif;
         }
+
         .blog-card img {
-    width: 100%;
-    height: 220px;
-    object-fit: contain;
-    object-position: center;
-    border-top-left-radius: 15px;
-    border-top-right-radius: 15px;
-}
+            width: 100%;
+            height: 220px;
+            object-fit: contain;
+            object-position: center;
+            border-top-left-radius: 15px;
+            border-top-right-radius: 15px;
+        }
 
-/* Limit description to 3 lines */
-.blog-desc {
-    color: #6c757d;
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-}
+        /* Limit description to 3 lines */
+        .blog-desc {
+            color: #6c757d;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
 
-.blog-title {
-    display: -webkit-box;
-    -webkit-line-clamp: 1;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-}
+        .blog-title {
+            display: -webkit-box;
+            -webkit-line-clamp: 1;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
 
         /* ===== NAVBAR ONLY ===== */
 
@@ -146,22 +152,54 @@
             text-decoration: none;
         }
 
+        .profile-box {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #fff;
+            padding: 6px 12px;
+            border-radius: 25px;
+            border: 1px solid #ddd;
+        }
+
+        .profile-img {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .profile-name {
+            font-weight: 600;
+            color: #333;
+        }
     </style>
-    
+
 </head>
 
 <body>
     <nav class="navbar">
         <div class="nav-left">
-        <a href="index.php"><h2 class="logo">ProBlogger</h2></a>
+            <a href="index.php">
+                <h2 class="logo">ProBlogger</h2>
+            </a>
         </div>
 
         <div class="nav-right">
             <?php
-            session_start();
+            
             if (isset($_SESSION['user_id'])) {
-                echo '<a href="dashboard.php" class="btn new-blog">Dashboard</a>';
+                $username = $_SESSION['username'];
+                $profileImage = $_SESSION['profile_image'] ?? 'default.png'; 
+
+                echo '<a href="dashboard.php"><div class="profile-box">
+                        <img src="./uploads/' . $profileImage . '" class="profile-img" alt="Profile">
+
+                        <span class="profile-name">' . htmlspecialchars($username) . '</span>
+                    </div></a>';
+
                 echo '<a href="process.php?logout=true" name="logout" class="btn login">Logout</a>';
+
             } else {
                 echo '<a href="login.php" class="btn login">Login</a>';
                 echo '<a href="register.php" class="btn signup">Signup</a>';
@@ -175,27 +213,27 @@
         <h2 class="fw-bold text-center mb-5 text-primary">All Blog Posts</h2>
 
         <div class="row g-4">
-<?php
-include_once('database.php');
+            <?php
+            include_once('database.php');
 
-$query = "SELECT * FROM blogs";
-$res = mysqli_query($conn, $query);
+            $query = "SELECT * FROM blogs";
+            $res = mysqli_query($conn, $query);
 
-while ($row = mysqli_fetch_assoc($res)) {
-?>
-    <div class="col-md-4">
-        <div class="blog-card mb-4">
-            <img src="./uploads/<?php echo $row['blog_image']; ?>" alt="">
-            <div class="blog-body">
-                <small class="text-muted"><?php echo date('Y/m/d', strtotime($row['published_date'])); ?></small>
-                <h5 class="fw-bold mt-2 blog-title "><?php echo $row['blog_title']; ?></h5>
-                <p class="blog-desc"><?php echo $row['description']; ?></p>
-                <a href="detail.php?id=<?php echo $row['id']; ?>" class="btn-read">Read More →</a>
-            </div>
+            while ($row = mysqli_fetch_assoc($res)) {
+            ?>
+                <div class="col-md-4">
+                    <div class="blog-card mb-4">
+                        <img src="./uploads/<?php echo $row['blog_image']; ?>" alt="">
+                        <div class="blog-body">
+                            <small class="text-muted"><?php echo date('Y/m/d', strtotime($row['published_date'])); ?></small>
+                            <h5 class="fw-bold mt-2 blog-title "><?php echo $row['blog_title']; ?></h5>
+                            <p class="blog-desc"><?php echo $row['description']; ?></p>
+                            <a href="detail.php?id=<?php echo $row['id']; ?>" class="btn-read">Read More →</a>
+                        </div>
+                    </div>
+                </div>
+            <?php } ?>
         </div>
-    </div>
-<?php } ?>
-</div>
 
     </div>
 
