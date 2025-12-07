@@ -125,7 +125,6 @@ if(isset($_SESSION['user_id'])){
         </div>
 
         <div class="nav-right">
-            <a href="createBlog.php" class="btn new-blog">New Blog</a>
             <a href="login.php" class="btn login">Login</a>
             <a href="register.php" class="btn signup">Signup</a>
         </div>
